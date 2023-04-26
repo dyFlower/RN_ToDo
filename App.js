@@ -14,12 +14,25 @@ import { useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const STORAGE_KEY = '@toDos';
+const PAGE_KEY = '@page';
+
 export default function App() {
   const [working, setWorking] = useState(true);
   const [text, setText] = useState('');
   const [toDos, setToDos] = useState({});
-  const travel = () => setWorking(false);
-  const work = () => setWorking(true);
+
+  const travel = async () => {
+    await AsyncStorage.setItem(PAGE_KEY, 'false');
+    setWorking(false);
+  };
+  const work = async () => {
+    await AsyncStorage.setItem(PAGE_KEY, 'true');
+    setWorking(true);
+  };
+  const curPage = async () => {
+    const page = await AsyncStorage.getItem(PAGE_KEY);
+    page === 'true' ? setWorking(true) : setWorking(false);
+  };
   const onChangeText = (payload) => {
     setText(payload);
   };
@@ -61,6 +74,7 @@ export default function App() {
 
   useEffect(() => {
     loadToDos();
+    curPage();
   }, []);
 
   return (
